@@ -1,0 +1,41 @@
+name: Trigger_APIsec_scan
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  apisec_scan:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Run APIsec Scan
+      env:
+        APISEC_USERNAME: ${{ secrets.APISEC_USERNAME }}
+        APISEC_PASSWORD: ${{ secrets.APISEC_PASSWORD }}
+        APISEC_PROJECT: "VAmPI"
+        APISEC_PROFILE: "Master"
+        APISEC_SCANNER: "default"
+        APISEC_OUTPUT: "apisec-results.sarif"
+        APISEC_EMAIL: "true"
+        APISEC_FAIL_ON_VULN: "true"
+        APISEC_OAS: "false"
+        APISEC_HOST: "https://your-api-host.com"  # Replace with actual host
+        APISEC_OPENAPI_URL: "https://your-openapi-spec.yaml"  # Replace as needed
+      run: |
+        ${GITHUB_ACTION_PATH}/apisec-run-scan.sh \
+          --username "$APISEC_USERNAME" \
+          --password "$APISEC_PASSWORD" \
+          --project "$APISEC_PROJECT" \
+          --profile "$APISEC_PROFILE" \
+          --scanner "$APISEC_SCANNER" \
+          --outputfile "$APISEC_OUTPUT" \
+          --refresh-playbooks \
+          --host "$APISEC_HOST" \
+          --emailReport "$APISEC_EMAIL" \
+          --fail-on-vuln-severity "$APISEC_FAIL_ON_VULN" \
+          --oas "$APISEC_OAS" \
+          --openApiSpecUrl "$APISEC_OPENAPI_URL"
